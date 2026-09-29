@@ -29,9 +29,12 @@ jobs:
         run: |
           $exe = Get-Item ./CopyUnixPath.exe
           Write-Host "size = $($exe.Length) bytes"
-          if ($exe.Length -lt 50000) { throw "意外的体积：$($exe.Length)" }
-          & ./CopyUnixPath.exe
-          if ($LASTEXITCODE -ne 0) { throw "exe 退出码 $LASTEXITCODE" }
+          if ($exe.Length -lt 50000) { throw "unexpected size: $($exe.Length)" }
+          # $LASTEXITCODE stays unset for a windows-subsystem binary, so read the
+          # process exit code instead.
+          $p = Start-Process -FilePath $exe.FullName -PassThru -Wait
+          Write-Host "exit code = $($p.ExitCode)"
+          if ($p.ExitCode -ne 0) { throw "exe exited with $($p.ExitCode)" }
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
