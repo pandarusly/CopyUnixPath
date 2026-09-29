@@ -9,3 +9,6 @@ CopyUnixPath.ini
 
 # 本机材料，不进仓库
 CopyUnixPath-material/
+
+# 本机交接说明，不进仓库
+HANDOFF.md
