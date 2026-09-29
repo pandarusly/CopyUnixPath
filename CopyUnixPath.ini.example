@@ -1,0 +1,14 @@
+; CopyUnixPath 映射规则示例
+;
+; 格式：匹配串>替换串
+; 匹配串写 Windows 反斜杠路径，替换串写目标路径，`>` 是分隔符
+; 顺序重要：更具体的路径必须排在更泛的路径前面，否则会被泛规则先命中
+;
+; 复制本文件为 CopyUnixPath.ini 再改成自己的路径（build.ps1 在缺失时会自动复制一份）
+
+[Rules]
+Rule1=C:\data>/mnt/data
+Rule2=D:\project\weights>/weights
+Rule3=D:\project\logs>/logs
+Rule4=D:\project>/workspace
+Rule5=E:\code>/code

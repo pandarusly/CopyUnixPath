@@ -1,0 +1,11 @@
+# 编译产物
+*.exe
+*.obj
+*.pdb
+*.ilk
+
+# 本机映射规则，仓库跟踪的是 CopyUnixPath.ini.example
+CopyUnixPath.ini
+
+# 本机材料，不进仓库
+CopyUnixPath-material/

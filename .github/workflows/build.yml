@@ -1,0 +1,51 @@
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up MSVC environment
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: Build
+        shell: pwsh
+        run: ./build.ps1
+
+      - name: Smoke test
+        shell: pwsh
+        run: |
+          $exe = Get-Item ./CopyUnixPath.exe
+          Write-Host "size = $($exe.Length) bytes"
+          if ($exe.Length -lt 50000) { throw "意外的体积：$($exe.Length)" }
+          & ./CopyUnixPath.exe
+          if ($LASTEXITCODE -ne 0) { throw "exe 退出码 $LASTEXITCODE" }
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: CopyUnixPath
+          path: |
+            CopyUnixPath.exe
+            CopyUnixPath.ini.example
+
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          Copy-Item ./CopyUnixPath.ini.example ./CopyUnixPath.ini
+          gh release create $env:GITHUB_REF_NAME --title $env:GITHUB_REF_NAME --generate-notes ./CopyUnixPath.exe ./CopyUnixPath.ini
